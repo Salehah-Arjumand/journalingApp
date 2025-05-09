@@ -24,11 +24,11 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
-            if(userService.findById(user.getId()).isPresent()){
+            if (userService.findById(user.getId()).isPresent()) {
                 return new ResponseEntity<>("User with id: " + user.getId() + " already exists!", HttpStatus.BAD_REQUEST);
-            } else if(userService.findByUsername(user.getUsername()) != null){
+            } else if (userService.findByUsername(user.getUsername()) != null) {
                 return new ResponseEntity<>("User with username: " + user.getUsername() + " already exists!", HttpStatus.BAD_REQUEST);
-            }else{
+            } else {
                 userService.saveUser(user);
                 return new ResponseEntity<>(user, HttpStatus.CREATED);
             }
@@ -52,9 +52,9 @@ public class UserController {
     public ResponseEntity<?> deleteUserById(@PathVariable String id) {
         User userInDb = userService.findById(id).orElse(null);
         if (userInDb != null) {
-        userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }else{
+            userService.deleteUser(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
             return new ResponseEntity<>("User with id: " + id + " not found!", HttpStatus.NOT_FOUND);
         }
     }
