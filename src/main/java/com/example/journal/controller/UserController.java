@@ -18,17 +18,17 @@ public class UserController {
 
     @GetMapping("")
     public List<User> getAllUsers() {
-        return userService.getAll();
+        return userService.getAllUsers();
     }
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
-            if (userService.findById(user.getId()).isPresent()) {
+            if(userService.findUserById(user.getId()).isPresent()){
                 return new ResponseEntity<>("User with id: " + user.getId() + " already exists!", HttpStatus.BAD_REQUEST);
-            } else if (userService.findByUsername(user.getUsername()) != null) {
+            } else if(userService.findUserByUsername(user.getUsername()) != null){
                 return new ResponseEntity<>("User with username: " + user.getUsername() + " already exists!", HttpStatus.BAD_REQUEST);
-            } else {
+            }else{
                 userService.saveUser(user);
                 return new ResponseEntity<>(user, HttpStatus.CREATED);
             }
@@ -39,9 +39,9 @@ public class UserController {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
-        User j = userService.findById(id).orElse(null);
-        if (j != null) {
-            return new ResponseEntity<>(j, HttpStatus.OK);
+        User userInDb = userService.findUserById(id).orElse(null);
+        if (userInDb != null) {
+            return new ResponseEntity<>(userInDb, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -50,18 +50,18 @@ public class UserController {
 
     @DeleteMapping("/id/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable String id) {
-        User userInDb = userService.findById(id).orElse(null);
+        User userInDb = userService.findUserById(id).orElse(null);
         if (userInDb != null) {
-            userService.deleteUser(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
+        userService.deleteUserById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }else{
             return new ResponseEntity<>("User with id: " + id + " not found!", HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("username/{username}")
     public ResponseEntity<?> updateUserByUsername(@PathVariable String username, @RequestBody User user) {
-        User userInDb = userService.findByUsername(username);
+        User userInDb = userService.findUserByUsername(username);
         if (userInDb != null) {
             userInDb.setUsername(user.getUsername());
             userInDb.setPassword(user.getPassword());
@@ -75,7 +75,7 @@ public class UserController {
 
     @PutMapping("id/{id}")
     public ResponseEntity<?> updateUserById(@PathVariable String id, @RequestBody User user) {
-        User userInDb = userService.findById(id).orElse(null);
+        User userInDb = userService.findUserById(id).orElse(null);
         if (userInDb != null) {
             userInDb.setUsername(user.getUsername());
             userInDb.setPassword(user.getPassword());
