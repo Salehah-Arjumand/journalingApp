@@ -4,7 +4,11 @@ import lombok.Data;
 import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "users")
 @Data
@@ -16,6 +20,8 @@ public class User {
     private String username;
     @NonNull
     private String password;
+    @DBRef
+    private List<JournalEntry> journalEntries = new ArrayList<>();
 
     public User() {
     }
@@ -48,5 +54,13 @@ public class User {
 
     public void setPassword(@NonNull String password) {
         this.password = password;
+    }
+
+    public List<JournalEntry> getJournalEntries() {
+        return journalEntries;
+    }
+
+    public void setJournalEntries(List<JournalEntry> journalEntries) {
+        this.journalEntries = journalEntries;
     }
 }

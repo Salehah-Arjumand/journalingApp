@@ -17,19 +17,19 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<User> getAll(){
+    public List<User> getAllUsers(){
         return userRepository.findAll();
     }
 
-    public Optional<User> findById(String id){
+    public Optional<User> findUserById(String id){
         return Optional.ofNullable(userRepository.findById(id).orElse(null));
     }
 
-    public void deleteUser(String id){
+    public void deleteUserById(String id){
         userRepository.deleteById(id);
     }
 
-    public User findByUsername(String username){
+    public User findUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
 
