@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -50,13 +51,18 @@ public class JournalEntryController {
         }
     }
 
-    @GetMapping("/journals/{journalId}")
-    public ResponseEntity<?> getJournalEntryById(@PathVariable("journalId") String journalId) {
-        JournalEntry j = journalEntryService.findJournalEntryById(journalId);
-        if (j != null) {
-            return new ResponseEntity<>(j, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Journal entry with id: " + journalId + " does not exist!", HttpStatus.NOT_FOUND);
+    @GetMapping("/users/{username}/journals/{journalId}")
+    public ResponseEntity<?> getUserJournalEntryById(@PathVariable("username") String username, @PathVariable("journalId") String journalId) {
+        User user = userService.findUserByUsername(username);
+        if(user != null){
+            JournalEntry j = user.getJournalEntryById(journalId);
+            if(j != null){
+                return new ResponseEntity<>(j, HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Journal entry with id: " + journalId + " does not exist for user with username: " + username + "!", HttpStatus.NOT_FOUND);
+            }
+        }else{
+            return new ResponseEntity<>("User with username: " + username + " does not exist!", HttpStatus.NOT_FOUND);
         }
 
     }
@@ -78,10 +84,17 @@ public class JournalEntryController {
                 journalEntryService.saveEntry(oldEntry);
                 return new ResponseEntity<>(oldEntry, HttpStatus.ACCEPTED);
             } else {
-                return new ResponseEntity<>("Journal entry with id: " + journalId + " does not exist!", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Journal entry with id: " + journalId + " does not exist for user with username: " + username + "!", HttpStatus.NOT_FOUND);
             }
         }else{
             return new ResponseEntity<>("User with username: " + username + " does not exist!", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/journals")
+    public ResponseEntity<?> getAllJournalEntries(){
+        List<JournalEntry> allEntries = journalEntryService.getAllJournalEntries();
+        return new ResponseEntity<>(allEntries, HttpStatus.OK);
+
     }
 }
