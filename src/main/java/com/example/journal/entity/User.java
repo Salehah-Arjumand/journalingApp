@@ -22,45 +22,4 @@ public class User {
     private String password;
     @DBRef
     private List<JournalEntry> journalEntries = new ArrayList<>();
-
-    public User() {
-    }
-
-    public User(String id, @NonNull String username, @NonNull String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public @NonNull String getUsername() {
-        return username;
-    }
-
-    public void setUsername(@NonNull String username) {
-        this.username = username;
-    }
-
-    public @NonNull String getPassword() {
-        return password;
-    }
-
-    public void setPassword(@NonNull String password) {
-        this.password = password;
-    }
-
-    public List<JournalEntry> getJournalEntries() {
-        return journalEntries;
-    }
-
-    public void setJournalEntries(List<JournalEntry> journalEntries) {
-        this.journalEntries = journalEntries;
-    }
 }
