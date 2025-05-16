@@ -22,8 +22,15 @@ public class User {
     private String username;
     @NonNull
     private String password;
+    private List<RolesEnum> roles;
     @DBRef
     private List<JournalEntry> journalEntries = new ArrayList<>();
+
+    public User(String id, @NonNull String username, @NonNull String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
 
     public JournalEntry getJournalEntryById(String id){
         for (int i = 0; i < journalEntries.size(); i++) {
