@@ -4,6 +4,7 @@ import com.example.journal.entity.JournalEntry;
 import com.example.journal.entity.User;
 import com.example.journal.service.JournalEntryService;
 import com.example.journal.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -40,9 +42,7 @@ public class AdminController {
 
     @PostMapping
     public ResponseEntity<?> createAdmin(@RequestBody User user) {
-        System.out.println("Creating admin with username: " + user.getUsername());
-        System.out.println("Password: " + user.getPassword());
-        System.out.println("ID: " + user.getId());
+        log.info("Creating admin with username: {}", user.getUsername());
         try {
             if (userService.findUserById(user.getId()).isPresent()) {
                 return new ResponseEntity<>("User with id: " + user.getId() + " already exists!", HttpStatus.BAD_REQUEST);

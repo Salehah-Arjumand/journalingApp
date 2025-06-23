@@ -3,12 +3,14 @@ package com.example.journal.controller;
 import com.example.journal.entity.User;
 import com.example.journal.service.JournalEntryService;
 import com.example.journal.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/public")
 public class PublicUserController {
@@ -23,11 +25,14 @@ public class PublicUserController {
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
             if (userService.findUserById(user.getId()).isPresent()) {
+                log.info("User with id: {} already exist", user.getId());
                 return new ResponseEntity<>("User with id: " + user.getId() + " already exists!", HttpStatus.BAD_REQUEST);
             } else if (userService.findUserByUsername(user.getUsername()) != null) {
+                log.info("User with username: {} already exists", user.getUsername());
                 return new ResponseEntity<>("User with username: " + user.getUsername() + " already exists!", HttpStatus.BAD_REQUEST);
             } else {
                 userService.saveNewUser(user);
+                log.info("Creating user with username: {}", user.getUsername());
                 return new ResponseEntity<>(user, HttpStatus.CREATED);
             }
         } catch (Exception e) {
