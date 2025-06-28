@@ -33,9 +33,9 @@ public class User {
     }
 
     public JournalEntry getJournalEntryById(String id){
-        for (int i = 0; i < journalEntries.size(); i++) {
-            if(journalEntries.get(i).getId().equals(id)){
-                return journalEntries.get(i);
+        for (JournalEntry journalEntry : journalEntries) {
+            if (journalEntry.getId().equals(id)) {
+                return journalEntry;
             }
         }
         return null;

@@ -1,6 +1,7 @@
 package com.example.journal.controller;
 
 import com.example.journal.entity.User;
+import com.example.journal.utils.LogMessages;
 import com.example.journal.service.JournalEntryService;
 import com.example.journal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +26,14 @@ public class PublicUserController {
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
             if (userService.findUserById(user.getId()).isPresent()) {
-                log.info("User with id: {} already exist", user.getId());
+                log.warn(LogMessages.USER_WITH_ID_EXISTS, user.getId());
                 return new ResponseEntity<>("User with id: " + user.getId() + " already exists!", HttpStatus.BAD_REQUEST);
             } else if (userService.findUserByUsername(user.getUsername()) != null) {
-                log.info("User with username: {} already exists", user.getUsername());
+                log.warn("User with username: {} already exists", user.getUsername());
                 return new ResponseEntity<>("User with username: " + user.getUsername() + " already exists!", HttpStatus.BAD_REQUEST);
             } else {
                 userService.saveNewUser(user);
-                log.info("Creating user with username: {}", user.getUsername());
+                log.info(LogMessages.CREATE_USER, user.getUsername());
                 return new ResponseEntity<>(user, HttpStatus.CREATED);
             }
         } catch (Exception e) {

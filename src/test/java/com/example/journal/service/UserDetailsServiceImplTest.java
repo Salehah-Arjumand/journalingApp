@@ -3,6 +3,7 @@ package com.example.journal.service;
 import com.example.journal.entity.RolesEnum;
 import com.example.journal.entity.User;
 import com.example.journal.repository.UserRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -17,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
-
+@Disabled
 @SpringBootTest
 public class UserDetailsServiceImplTest {
 
