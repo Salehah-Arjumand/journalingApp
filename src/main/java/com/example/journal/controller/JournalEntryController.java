@@ -1,10 +1,12 @@
 package com.example.journal.controller;
 
+import com.example.journal.dto.JournalEntryRequestDTO;
 import com.example.journal.entity.JournalEntry;
 import com.example.journal.entity.User;
 import com.example.journal.utils.LogMessages;
 import com.example.journal.service.JournalEntryService;
 import com.example.journal.service.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,19 +31,15 @@ public class JournalEntryController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createJournalForUser(@RequestBody JournalEntry journalEntry) {
+    public ResponseEntity<?> createJournalForUser(@RequestBody @Valid JournalEntryRequestDTO journalEntry) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         try {
 
-                if (journalEntryService.findJournalEntryById(journalEntry.getId()) != null) {
-                    log.warn(LogMessages.JOURNAL_WITH_ID_EXISTS, journalEntry.getId());
-                    return new ResponseEntity<>("Journal entry with id: " + journalEntry.getId() + " already exists!", HttpStatus.BAD_REQUEST);
-                } else {
                     journalEntryService.saveJournalEntry(username, journalEntry);
-                    log.info(LogMessages.CREATE_JOURNAL, journalEntry.getId(), username);
+                    log.info(LogMessages.CREATE_JOURNAL, journalEntry.getTitle(), username);
                     return new ResponseEntity<>(journalEntry, HttpStatus.CREATED);
-                }
+
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

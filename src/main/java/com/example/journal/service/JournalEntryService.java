@@ -1,5 +1,6 @@
 package com.example.journal.service;
 
+import com.example.journal.dto.JournalEntryRequestDTO;
 import com.example.journal.entity.JournalEntry;
 import com.example.journal.entity.User;
 import com.example.journal.repository.JournalEntryRepository;
@@ -19,14 +20,15 @@ public class JournalEntryService {
     private UserService userService;
 
     @Transactional
-    public void saveJournalEntry(String username, JournalEntry journalEntry){
+    public void saveJournalEntry(String username, JournalEntryRequestDTO journalEntry){
         try {
             User user = userService.findUserByUsername(username);
-
-            journalEntry.setDate(LocalDateTime.now());
-            JournalEntry saved = journalEntryRepository.save(journalEntry);
+            JournalEntry newJournalEntry = new JournalEntry();
+            newJournalEntry.setTitle(journalEntry.getTitle());
+            newJournalEntry.setContent(journalEntry.getContent());
+            newJournalEntry.setDate(LocalDateTime.now());
+            JournalEntry saved = journalEntryRepository.save(newJournalEntry);
             user.getJournalEntries().add(saved);
-            user.setPassword(user.getPassword());
             userService.saveUser(user);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while saving the entry");

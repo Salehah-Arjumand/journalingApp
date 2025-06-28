@@ -23,100 +23,52 @@ public class UserController {
     @Autowired
     private JournalEntryService journalEntryService;
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        if (userService.findUserByUsername(username).getId().equals(id)) {
-            User userInDb = userService.findUserById(id).orElse(null);
-            if (userInDb != null) {
-                log.info(LogMessages.UPDATE_USER_BY_ID, id);
-                return new ResponseEntity<>(userInDb, HttpStatus.OK);
-            } else {
-                log.warn(LogMessages.USER_WITH_ID_NOT_FOUND, id);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } else {
-            log.warn(LogMessages.ACCESS_DENIED);
-            return new ResponseEntity<>("Access denied. You are not authorized to get user with id: " + id, HttpStatus.FORBIDDEN);
-        }
-    }
-
     @GetMapping
     public ResponseEntity<?> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-            User userInDb = userService.findUserByUsername(username);
-            if (userInDb != null) {
-                log.info(LogMessages.GET_USER_BY_USERNAME, username);
-                return new ResponseEntity<>(userInDb, HttpStatus.OK);
-            } else {
-                log.warn(LogMessages.USER_WITH_USERNAME_NOT_FOUND, username);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+        User userInDb = userService.findUserByUsername(username);
+        if (userInDb != null) {
+            log.info(LogMessages.GET_USER_BY_USERNAME, username);
+            return new ResponseEntity<>(userInDb, HttpStatus.OK);
+        } else {
+            log.warn(LogMessages.USER_WITH_USERNAME_NOT_FOUND, username);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
     }
 
-    @DeleteMapping("/id/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable String id) {
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        if (userService.findUserByUsername(username).getId().equals(id)) {
-            User userInDb = userService.findUserById(id).orElse(null);
-            if (userInDb != null) {
-                userService.deleteUserById(id);
-                log.info(LogMessages.DELETE_USER_BY_ID, id);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                log.warn(LogMessages.USER_WITH_ID_NOT_FOUND, id);
-                return new ResponseEntity<>("User with id: " + id + " not found!", HttpStatus.NOT_FOUND);
-            }
+        User userInDb = userService.findUserByUsername(username);
+        if (userInDb != null) {
+            userService.deleteUserById(userInDb.getId());
+            log.info(LogMessages.DELETE_USER_BY_USERNAME, username);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            log.warn(LogMessages.ACCESS_DENIED);
-            return new ResponseEntity<>("Access denied. You are not authorized to delete user with id: " + id, HttpStatus.FORBIDDEN);
+            log.warn(LogMessages.USER_WITH_USERNAME_NOT_FOUND, username);
+            return new ResponseEntity<>("User with username: " + username + " not found!", HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/username")
-    public ResponseEntity<?> updateUserByUsername(@RequestBody User user) {
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User userInDb = userService.findUserByUsername(username);
         if (userInDb != null) {
             userInDb.setUsername(user.getUsername());
             userInDb.setPassword(user.getPassword());
-            userService.saveNewUser(userInDb);
+            userService.updateUser(userInDb);
             log.info(LogMessages.UPDATE_USER_BY_USERNAME, username);
             return new ResponseEntity<>(userInDb, HttpStatus.ACCEPTED);
         } else {
             log.warn(LogMessages.USER_WITH_USERNAME_NOT_FOUND, username);
             return new ResponseEntity<>("User with user name: " + username + " not found!", HttpStatus.NOT_FOUND);
         }
-
-    }
-
-    @PutMapping("id/{id}")
-    public ResponseEntity<?> updateUserById(@PathVariable String id, @RequestBody User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        if (userService.findUserByUsername(username).getId().equals(id)) {
-            User userInDb = userService.findUserById(id).orElse(null);
-            if (userInDb != null) {
-                userInDb.setUsername(user.getUsername());
-                userInDb.setPassword(user.getPassword());
-            userService.saveNewUser(userInDb);
-                log.info(LogMessages.UPDATE_USER_BY_ID, id);
-                return new ResponseEntity<>(userInDb, HttpStatus.ACCEPTED);
-            } else {
-                log.warn(LogMessages.USER_WITH_ID_NOT_FOUND, id);
-                return new ResponseEntity<>("User with id: " + id + " not found!", HttpStatus.NOT_FOUND);
-            }
-        } else {
-            log.warn(LogMessages.ACCESS_DENIED);
-            return new ResponseEntity<>("Access denied. You are not authorized to update user with id: " + id, HttpStatus.FORBIDDEN);
-        }
-
     }
 
 
