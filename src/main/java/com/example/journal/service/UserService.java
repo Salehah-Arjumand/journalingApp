@@ -1,5 +1,6 @@
 package com.example.journal.service;
 
+import com.example.journal.dto.UserRequestDTO;
 import com.example.journal.entity.RolesEnum;
 import com.example.journal.entity.User;
 import com.example.journal.repository.UserRepository;
@@ -18,19 +19,32 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void saveNewUser(User user) {
-            String password = passwordEncoder.encode(user.getPassword());
-            user.setPassword(password);
-            user.setRoles(List.of(RolesEnum.USER));
-            userRepository.save(user);
+    public void saveNewUser(UserRequestDTO user) {
+        User newUser = new User();
+        newUser.setUsername(user.getUsername());
+        String password = passwordEncoder.encode(user.getPassword());
+        newUser.setPassword(password);
+        newUser.setRoles(List.of(RolesEnum.USER));
+        userRepository.save(newUser);
 
     }
 
-    public void saveAdmin(User user) {
+    public void updateUser(User user) {
+        user.setUsername(user.getUsername());
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
-        user.setRoles(List.of(RolesEnum.USER, RolesEnum.ADMIN));
+        user.setRoles(List.of(RolesEnum.USER));
         userRepository.save(user);
+
+    }
+
+    public void saveAdmin(UserRequestDTO user) {
+        User newUser = new User();
+        newUser.setUsername(user.getUsername());
+        String password = passwordEncoder.encode(user.getPassword());
+        newUser.setPassword(password);
+        newUser.setRoles(List.of(RolesEnum.USER, RolesEnum.ADMIN));
+        userRepository.save(newUser);
 
     }
 

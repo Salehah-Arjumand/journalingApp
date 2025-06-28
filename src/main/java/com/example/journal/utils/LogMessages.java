@@ -18,6 +18,7 @@ public class LogMessages {
     public static final String GET_USER_BY_ID = "Getting user with ID: {}.";
     public static final String GET_USER_BY_USERNAME = "Getting user with username: {}.";
     public static final String DELETE_USER_BY_ID = "Deleting user with ID: {}.";
+    public static final String DELETE_USER_BY_USERNAME = "Deleting user with username: {}.";
     public static final String UPDATE_USER_BY_USERNAME = "Updating user with username: {}.";
     public static final String UPDATE_USER_BY_ID = "Updating user with ID: {}.";
 
@@ -25,7 +26,7 @@ public class LogMessages {
     public static final String CREATE_ADMIN = "Creating admin with username: {}.";
 
     // Journal entry logs
-    public static final String CREATE_JOURNAL = "Creating journal with ID: {} for user with username: {}.";
+    public static final String CREATE_JOURNAL = "Creating journal with title: {} for user with username: {}.";
     public static final String GET_ALL_JOURNALS_BY_USER = "Getting all journal entries by user with username: {}.";
     public static final String GET_JOURNAL_BY_ID_AND_USER = "Getting journal entry with ID: {} by user with username: {}.";
     public static final String JOURNAL_NOT_FOUND_FOR_USER = "Journal entry with ID: {} does not exist for user with username: {}.";

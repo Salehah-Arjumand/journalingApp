@@ -1,5 +1,6 @@
 package com.example.journal.controller;
 
+import com.example.journal.dto.UserRequestDTO;
 import com.example.journal.entity.JournalEntry;
 import com.example.journal.entity.User;
 import com.example.journal.utils.LogMessages;
@@ -42,12 +43,9 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAdmin(@RequestBody User user) {
+    public ResponseEntity<?> createAdmin(@RequestBody UserRequestDTO user) {
         try {
-            if (userService.findUserById(user.getId()).isPresent()) {
-                log.warn(LogMessages.USER_WITH_ID_EXISTS, user.getId());
-                return new ResponseEntity<>("User with id: " + user.getId() + " already exists!", HttpStatus.BAD_REQUEST);
-            } else if (userService.findUserByUsername(user.getUsername()) != null) {
+            if (userService.findUserByUsername(user.getUsername()) != null) {
                 log.warn(LogMessages.USER_WITH_USERNAME_EXISTS, user.getUsername());
                 return new ResponseEntity<>("User with username: " + user.getUsername() + " already exists!", HttpStatus.BAD_REQUEST);
             } else {

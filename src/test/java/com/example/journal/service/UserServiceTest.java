@@ -1,15 +1,17 @@
 package com.example.journal.service;
 
+import com.example.journal.dto.UserRequestDTO;
 import com.example.journal.entity.RolesEnum;
 import com.example.journal.entity.User;
 import com.example.journal.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -19,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@Disabled
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
     @Mock
@@ -39,34 +40,71 @@ public class UserServiceTest {
 
     @Test
     public void testSaveNewUser() {
-        User user = new User();
-        user.setUsername("testuser");
-        user.setPassword("password");
+        UserRequestDTO userDto = new UserRequestDTO();
+        userDto.setUsername("testuser");
+        userDto.setPassword("password");
 
         when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(user);
 
-        userService.saveNewUser(user);
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
-        assertEquals("encodedPassword", user.getPassword());
-        assertTrue(user.getRoles().contains(RolesEnum.USER));
-        verify(userRepository, times(1)).save(user);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        userService.saveNewUser(userDto);
+
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertEquals("testuser", savedUser.getUsername());
+        assertEquals("encodedPassword", savedUser.getPassword());
+        assertTrue(savedUser.getRoles().contains(RolesEnum.USER));
     }
 
     @Test
     public void testSaveAdmin() {
-        User user = new User();
-        user.setUsername("admin");
-        user.setPassword("adminpass");
+        UserRequestDTO userDto = new UserRequestDTO();
+        userDto.setUsername("admin");
+        userDto.setPassword("adminpass");
 
         when(passwordEncoder.encode("adminpass")).thenReturn("encodedAdminPass");
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
-        userService.saveAdmin(user);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertEquals("encodedAdminPass", user.getPassword());
-        assertTrue(user.getRoles().contains(RolesEnum.ADMIN));
-        assertTrue(user.getRoles().contains(RolesEnum.USER));
-        verify(userRepository, times(1)).save(user);
+        userService.saveAdmin(userDto);
+
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertEquals("admin", savedUser.getUsername());
+        assertEquals("encodedAdminPass", savedUser.getPassword());
+        assertTrue(savedUser.getRoles().contains(RolesEnum.ADMIN));
+        assertTrue(savedUser.getRoles().contains(RolesEnum.USER));
+    }
+
+    @Test
+    public void testUpdateUser() {
+        // Arrange
+        User user = new User();
+        user.setUsername("updateduser");
+        user.setPassword("newPassword");
+
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        userService.updateUser(user);
+
+        // Assert
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+
+        User savedUser = userCaptor.getValue();
+
+        assertEquals("updateduser", savedUser.getUsername());
+        assertEquals("encodedNewPassword", savedUser.getPassword());
+        assertTrue(savedUser.getRoles().contains(RolesEnum.USER));
+        assertEquals(1, savedUser.getRoles().size());
     }
 
     @Test
