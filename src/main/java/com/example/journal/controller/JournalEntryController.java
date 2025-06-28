@@ -2,6 +2,7 @@ package com.example.journal.controller;
 
 import com.example.journal.entity.JournalEntry;
 import com.example.journal.entity.User;
+import com.example.journal.utils.LogMessages;
 import com.example.journal.service.JournalEntryService;
 import com.example.journal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -35,11 +35,11 @@ public class JournalEntryController {
         try {
 
                 if (journalEntryService.findJournalEntryById(journalEntry.getId()) != null) {
-                    log.info("Journal with id: {} already exists", journalEntry.getId());
+                    log.warn(LogMessages.JOURNAL_WITH_ID_EXISTS, journalEntry.getId());
                     return new ResponseEntity<>("Journal entry with id: " + journalEntry.getId() + " already exists!", HttpStatus.BAD_REQUEST);
                 } else {
                     journalEntryService.saveJournalEntry(username, journalEntry);
-                    log.info("Creating journal with id: {} for username: {}", journalEntry.getId(), username);
+                    log.info(LogMessages.CREATE_JOURNAL, journalEntry.getId(), username);
                     return new ResponseEntity<>(journalEntry, HttpStatus.CREATED);
                 }
 
@@ -55,11 +55,11 @@ public class JournalEntryController {
         String username = authentication.getName();
         User user = userService.findUserByUsername(username);
         if (user != null) {
-            log.info("Getting all journal entries by user with username: {}", username);
+            log.info(LogMessages.GET_ALL_JOURNALS_BY_USER, username);
             List<JournalEntry> all = user.getJournalEntries();
             return new ResponseEntity<>(all, HttpStatus.OK);
         } else {
-            log.info("User with username: {} not found", username);
+            log.warn(LogMessages.USER_WITH_USERNAME_NOT_FOUND, username);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -72,15 +72,15 @@ public class JournalEntryController {
         if (user != null) {
             JournalEntry j = user.getJournalEntryById(journalId);
             if (j != null) {
-                log.info("Getting journal entry with id: {} by user with username: {}", journalId, username);
+                log.info(LogMessages.GET_JOURNAL_BY_ID_AND_USER, journalId, username);
                 return new ResponseEntity<>(j, HttpStatus.OK);
             } else {
-                log.info("Journal entry with id: {} does not exist for user with username: {}", journalId, username);
+                log.info(LogMessages.JOURNAL_NOT_FOUND_FOR_USER, journalId, username);
 
-                return new ResponseEntity<>("Journal entry with id: " + journalId + " does not exist for user with username: " + username + "!", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Journal entry with ID: " + journalId + " does not exist for user with username: " + username + "!", HttpStatus.NOT_FOUND);
             }
         } else {
-            log.info("User with username: {} not found", username);
+            log.warn(LogMessages.USER_WITH_USERNAME_NOT_FOUND, username);
             return new ResponseEntity<>("User with username: " + username + " does not exist!", HttpStatus.NOT_FOUND);
         }
 
@@ -91,7 +91,7 @@ public class JournalEntryController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         journalEntryService.deleteJournalEntryFromUser(journalId, username);
-        log.info("Deleting journal entry with id: {} for user with username: {}", journalId, username);
+        log.info(LogMessages.DELETE_JOURNAL_BY_ID_AND_USER, journalId, username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -106,13 +106,14 @@ public class JournalEntryController {
                 oldEntry.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : oldEntry.getTitle());
                 oldEntry.setDate(LocalDateTime.now());
                 journalEntryService.saveEntry(oldEntry);
-                log.info("Updating journal entry with id: {} for user with username: {}", journalId, username);
+                log.info(LogMessages.UPDATE_JOURNAL_BY_ID_AND_USER, journalId, username);
                 return new ResponseEntity<>(oldEntry, HttpStatus.ACCEPTED);
             } else {
-                return new ResponseEntity<>("Journal entry with id: " + journalId + " does not exist for user with username: " + username + "!", HttpStatus.NOT_FOUND);
+                log.info(LogMessages.JOURNAL_NOT_FOUND_FOR_USER);
+                return new ResponseEntity<>("Journal entry with ID: " + journalId + " does not exist for user with username: " + username + "!", HttpStatus.NOT_FOUND);
             }
         } else {
-            log.info("User with username: {} not found", username);
+            log.warn(LogMessages.USER_WITH_USERNAME_NOT_FOUND, username);
             return new ResponseEntity<>("User with username: " + username + " does not exist!", HttpStatus.NOT_FOUND);
         }
     }

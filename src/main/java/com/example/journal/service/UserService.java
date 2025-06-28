@@ -44,7 +44,7 @@ public class UserService {
     }
 
     public Optional<User> findUserById(String id){
-        return Optional.ofNullable(userRepository.findById(id).orElse(null));
+        return userRepository.findById(id);
     }
 
     public void deleteUserById(String id){

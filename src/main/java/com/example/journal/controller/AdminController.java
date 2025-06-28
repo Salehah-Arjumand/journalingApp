@@ -2,6 +2,7 @@ package com.example.journal.controller;
 
 import com.example.journal.entity.JournalEntry;
 import com.example.journal.entity.User;
+import com.example.journal.utils.LogMessages;
 import com.example.journal.service.JournalEntryService;
 import com.example.journal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,14 +43,16 @@ public class AdminController {
 
     @PostMapping
     public ResponseEntity<?> createAdmin(@RequestBody User user) {
-        log.info("Creating admin with username: {}", user.getUsername());
         try {
             if (userService.findUserById(user.getId()).isPresent()) {
+                log.warn(LogMessages.USER_WITH_ID_EXISTS, user.getId());
                 return new ResponseEntity<>("User with id: " + user.getId() + " already exists!", HttpStatus.BAD_REQUEST);
             } else if (userService.findUserByUsername(user.getUsername()) != null) {
+                log.warn(LogMessages.USER_WITH_USERNAME_EXISTS, user.getUsername());
                 return new ResponseEntity<>("User with username: " + user.getUsername() + " already exists!", HttpStatus.BAD_REQUEST);
             } else {
                 userService.saveAdmin(user);
+                log.info(LogMessages.CREATE_ADMIN, user.getUsername());
                 return new ResponseEntity<>(user, HttpStatus.CREATED);
             }
         } catch (Exception e) {
