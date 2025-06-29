@@ -3,6 +3,7 @@ package com.example.journal.controller;
 import com.example.journal.dto.JournalEntryRequestDTO;
 import com.example.journal.entity.JournalEntry;
 import com.example.journal.entity.User;
+import com.example.journal.service.QuoteService;
 import com.example.journal.utils.LogMessages;
 import com.example.journal.service.JournalEntryService;
 import com.example.journal.service.UserService;
@@ -30,6 +31,10 @@ public class JournalEntryController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private QuoteService quoteService;
+
+
     @PostMapping
     public ResponseEntity<?> createJournalForUser(@RequestBody @Valid JournalEntryRequestDTO journalEntry) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -38,8 +43,11 @@ public class JournalEntryController {
 
                     journalEntryService.saveJournalEntry(username, journalEntry);
                     log.info(LogMessages.CREATE_JOURNAL, journalEntry.getTitle(), username);
-                    return new ResponseEntity<>(journalEntry, HttpStatus.CREATED);
-
+                    String randomQuote = quoteService.getRandomQuote();
+            String message =
+                    "Your journal entry " + journalEntry.getTitle() + " has been saved successfully!\nHere's something to inspire you today:\n" +
+                    randomQuote;
+            return new ResponseEntity<>(message, HttpStatus.CREATED);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
